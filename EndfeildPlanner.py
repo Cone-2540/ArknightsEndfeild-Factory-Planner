@@ -148,9 +148,10 @@ with st.container():
         st.markdown("**2. 资源与全局**")
         storage_cap = st.number_input("仓库容量上限", value=14000, step=1000)
         power_redundancy = st.number_input("期望发电冗余（用于铺设滑索和防御塔等）", value=500, step=50)
-        max_split_depth = st.number_input("分流器深度 (每个设备允许的分流器分流次数，0为禁用分流器，越深产线越灵活, 但是基建可读性越差且越复杂)", 0, 2, 0)
+        max_split_depth = st.number_input("分流器深度 (每个设备允许的分流器分流次数, 0为禁用分流器, 越深产线越灵活, 但是基建可读性越差且越复杂)", 0, 2, 0)
         
-        st.markdown("**3. 矿产产能 (块/分钟)**")
+        st.markdown("**3. 矿产产能 (块/min)**")
+        st.markdown("每个电驱矿机/二型电驱矿机均提供20矿/min")
         cap_ore = st.number_input("源矿产能", value=440, step=20)
         cap_amethyst = st.number_input("紫晶产能", value=220, step=20)
         cap_iron = st.number_input("蓝铁产能", value=300, step=20)
@@ -426,7 +427,7 @@ if st.button("开始规划计算", type="primary"):
         status_text.empty()
         
         if status == pulp.LpStatusOptimal:
-            st.success(f"规划完成！建议上线周期: {final_T:.1f} 小时 {'(产能饱和)' if not best_feasibility else ''}")
+            st.success(f"规划完成！最大上线周期: {final_T:.1f} 小时 {'(产能饱和)' if not best_feasibility else ''}")
             
             # --- 1. 电力概览 ---
             st.header("⚡ 电力与资源概览")
