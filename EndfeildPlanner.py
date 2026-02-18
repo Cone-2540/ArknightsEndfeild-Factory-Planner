@@ -151,7 +151,6 @@ with st.container():
         max_split_depth = st.number_input("分流器深度 (每个设备允许的分流器分流次数, 0为禁用分流器, 越深产线越灵活, 但是基建可读性越差且越复杂)", 0, 2, 0)
         
         st.markdown("**3. 矿产产能 (块/min)**")
-        st.markdown("每个电驱矿机/二型电驱矿机均提供20矿/min")
         cap_ore = st.number_input("源矿产能", value=440, step=20)
         cap_amethyst = st.number_input("紫晶产能", value=220, step=20)
         cap_iron = st.number_input("蓝铁产能", value=300, step=20)
