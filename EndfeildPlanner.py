@@ -443,10 +443,10 @@ if st.button("开始规划计算", type="primary"):
             # 矿物详情表
             mining_data = {
                 "矿物类型": ["源矿", "紫晶", "蓝铁"],
-                "开采量/min": [pulp.value(cons_map["源矿"]), pulp.value(cons_map["紫晶"]), pulp.value(cons_map["蓝铁"])],
+                "冗余量/min": [pulp.value(cons_map["源矿"]), pulp.value(cons_map["紫晶"]), pulp.value(cons_map["蓝铁"])],
                 "上限/min": [MINING_CAPS["源矿"], MINING_CAPS["紫晶"], MINING_CAPS["蓝铁"]]
             }
-            st.dataframe(pd.DataFrame(mining_data).style.format({"开采量/min": "{:.1f}", "上限/min": "{:.0f}"}), hide_index=True)
+            st.dataframe(pd.DataFrame(mining_data).style.format({"冗余量/min": "{:.1f}", "上限/min": "{:.0f}"}), hide_index=True)
 
             # --- 2. 产线设备配置 ---
             st.header("⚙️ 制造与农业设备")
