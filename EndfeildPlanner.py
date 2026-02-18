@@ -99,16 +99,18 @@ with st.sidebar:
     st.markdown("""
     - 💻 [GitHub 主页](https://github.com/Cone-2540)
     - 🔗 [B站主页](https://space.bilibili.com/3493292419320630)
-    - 📧 联系邮箱: 1240368700@qq.com        
+    - 📧 BUG反馈/联系邮箱: 1240368700@qq.com        
     - 🎮 终末地UID: 1899164058
     """)
     
     st.info("💡 **说明(Q&A)**：")
-    st.markdown("1. 求解思路：基于Python的PuLP开源库中的**混合整数线性规划**算法和**二分查找**")
+    st.markdown("1. 求解思路：基于Python的PuLP开源库中的**混合整数线性规划**算法和**二分查找**算法")
     st.markdown("2. 优化目标：如果产能充足，最大化玩家相邻上线时间间隔，使得可以一次性交易完所有据点的所有谷地调度券\
                 ；如果产能不足，则最大化谷地调度券交易效率")
-    st.markdown("3. 未来版本可能出现增加据点调度券上限的派驻干员能力能力，因此调度券上限由手动输入")
-
+    st.markdown("3. 基建蓝图和毕业据点攻略在B站上已经很多，但是四号谷地的3个据点达到毕业之前仍有很长的游戏时间，\
+                因此本网页更注重游戏过程，提供了任意非满级据点组合的最佳产线规划策略。")
+    st.markdown("4. 得出对应产线产率需求后即可反推基建设备的布局，可以仿照生物代谢酶调控设计思路，关键中间产物回流\
+                协议储存系统，用于其他非交易产物（如工业爆炸物、装备原件）制造")
 
 st.title("🏭 《明日方舟：终末地》四号谷地工业产线规划器")
 
@@ -119,33 +121,34 @@ with st.container():
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("**1. 据点配置 (等级/产率/上限)**")
+        st.markdown("**1. 据点配置 (据点等级/调度券产率/调度券上限)**")
+        st.markdown("未来版本可能出现增加调度券上限的派驻干员能力，因此上限由手动输入，等级仅用于计算可交易物品")
         # 难民暂居处
         st.markdown("---")
         st.caption("难民暂居处")
-        lv_refugee = st.number_input("暂居处等级 (0-4)", min_value=0, max_value=4, value=4, step=1)
-        rate_refugee = st.number_input("暂居处产率", value=28107, step=100)
-        cap_refugee = st.number_input("暂居处上限", value=2200000, step=10000)
+        lv_refugee = st.number_input("难民暂居处等级 (0-4)", min_value=0, max_value=4, value=4, step=1)
+        rate_refugee = st.number_input("难民暂居处产率", value=28107, step=100)
+        cap_refugee = st.number_input("难民暂居处上限", value=2200000, step=10000)
         
         # 基建前站
         st.markdown("---")
         st.caption("基建前站")
-        lv_outpost = st.number_input("前站等级 (0-4)", min_value=0, max_value=4, value=4, step=1)
-        rate_outpost = st.number_input("前站产率", value=14820, step=100)
-        cap_outpost = st.number_input("前站上限", value=680000, step=10000)
+        lv_outpost = st.number_input("基建前站等级 (0-4)", min_value=0, max_value=4, value=4, step=1)
+        rate_outpost = st.number_input("基建前站产率", value=14820, step=100)
+        cap_outpost = st.number_input("基建前站上限", value=680000, step=10000)
         
         # 重建指挥部
         st.markdown("---")
         st.caption("重建指挥部")
-        lv_hq = st.number_input("指挥部等级 (0-4)", min_value=0, max_value=4, value=4, step=1)
-        rate_hq = st.number_input("指挥部产率", value=20000, step=100)
-        cap_hq = st.number_input("指挥部上限", value=1000000, step=10000)
+        lv_hq = st.number_input("重建指挥部等级 (0-4)", min_value=0, max_value=4, value=4, step=1)
+        rate_hq = st.number_input("重建指挥部产率", value=20000, step=100)
+        cap_hq = st.number_input("重建指挥部上限", value=1000000, step=10000)
 
     with col2:
         st.markdown("**2. 资源与全局**")
         storage_cap = st.number_input("仓库容量上限", value=14000, step=1000)
-        power_redundancy = st.number_input("期望发电冗余", value=500, step=50)
-        max_split_depth = st.number_input("分流器深度 (0=禁用, 1=简单, 2=复杂)", 0, 2, 0)
+        power_redundancy = st.number_input("期望发电冗余（用于铺设滑索和防御塔等）", value=500, step=50)
+        max_split_depth = st.number_input("分流器深度 (每个设备允许的分流器分流次数，0为禁用分流器，越深产线越灵活, 但是基建可读性越差且越复杂)", 0, 2, 0)
         
         st.markdown("**3. 矿产产能 (块/分钟)**")
         cap_ore = st.number_input("源矿产能", value=440, step=20)
@@ -155,7 +158,8 @@ with st.container():
         MINING_CAPS = {"源矿": cap_ore, "紫晶": cap_amethyst, "蓝铁": cap_iron}
 
     with col3:
-        st.markdown("**4. 农业解锁**")
+        st.markdown("**4. 作物解锁状态**")
+        st.markdown("如果某个作物（如砂叶）未解锁，则相关的产线规划将自动屏蔽该作物的使用")
         use_buckwheat = st.checkbox("荞花", value=True)
         use_citrus = st.checkbox("柑实", value=True)
         use_sandleaf = st.checkbox("砂叶", value=False)
